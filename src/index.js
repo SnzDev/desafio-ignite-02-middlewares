@@ -27,8 +27,8 @@ function checksCreateTodosUserAvailability(request, response, next) {
   const { user } = request;
   const lengthTodos = user.todos.length;
 
-  if (!user.pro && lengthTodos >=10) {
-    console.log(user.pro )
+  if (!user.pro && lengthTodos >= 10) {
+    console.log(user.pro)
     return response.status(400).json({ error: "Free plan accepts only 10 todos!" })
   }
 
@@ -36,7 +36,28 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+  const { id } = request.params;
+
+  if (!validate(id)) {
+    return response.status(400).json({ error: "This id isn't a uuid!" })
+  }
+
+  const user = users.find(user => user.username === username);
+
+  if (!user) {
+    return response.status(404).json({ error: "User not found!" })
+  }
+
+  const todoExists = user.todos.find(todo => todo.id === id);
+
+  if (!todoExists){
+    return response.status(400).json({ error: "This todo doesn't exist!" })
+  }
+
+  request.todo = todoExists;
+
+  next();
 }
 
 function findUserById(request, response, next) {
