@@ -10,10 +10,9 @@ app.use(cors());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  const { username } = request.header;
+  const { username } = request.headers;
 
   const user = users.find(user => user.username === username);
-  console.log(username);
 
   if (!user) {
     return response.status(404).json({ error: "User not found!" })
@@ -25,7 +24,15 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+  const lengthTodos = user.todos.length;
+
+  if (!user.pro && lengthTodos >=10) {
+    console.log(user.pro )
+    return response.status(400).json({ error: "Free plan accepts only 10 todos!" })
+  }
+
+  next();
 }
 
 function checksTodoExists(request, response, next) {
