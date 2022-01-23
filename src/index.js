@@ -29,7 +29,7 @@ function checksCreateTodosUserAvailability(request, response, next) {
 
   if (!user.pro && lengthTodos >= 10) {
     console.log(user.pro)
-    return response.status(400).json({ error: "Free plan accepts only 10 todos!" })
+    return response.status(403).json({ error: "Free plan accepts only 10 todos!" })
   }
 
   next();
@@ -49,13 +49,14 @@ function checksTodoExists(request, response, next) {
     return response.status(404).json({ error: "User not found!" })
   }
 
-  const todoExists = user.todos.find(todo => todo.id === id);
+  const todo = user.todos.find(todo => todo.id === id);
 
-  if (!todoExists) {
-    return response.status(400).json({ error: "This todo doesn't exist!" })
+  if (!todo) {
+    return response.status(404).json({ error: "This todo doesn't exist!" })
   }
 
-  request.todo = todoExists;
+  request.todo = todo;
+  request.user = user;
 
   next();
 }
